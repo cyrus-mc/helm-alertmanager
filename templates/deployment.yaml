@@ -58,8 +58,8 @@ spec:
           httpGet:
             path: "/#/status"
             port: {{ .Values.AlertManager.Port.Container }}
-          initialDelaySeconds: 30
-          timeoutSeconds: 30
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
         resources:
 {{ toYaml .Values.AlertManager.Resources | indent 12 }}
         volumeMounts:

@@ -40,6 +40,10 @@ AlertManager:
 
   Port:
     Container: 9093
+    Service: 80
+
+  Service:
+    Type: "ClusterIP"
 
   # currently will only work with value of 1 due to single PVC
   Replicas: 1
