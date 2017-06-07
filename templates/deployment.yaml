@@ -1,0 +1,89 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    component: {{ template "fullname" . }}
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+  name: {{ template "fullname" . }}
+  namespace: {{ .Values.Namespace | default "default" }}
+spec:
+  replicas: {{ .Values.AlertManager.Replicas | default 1 }}
+  template:
+    metadata:
+      labels:
+        component: {{ template "fullname" . }}
+        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+        heritage: {{ .Release.Service | quote }}
+        release: {{ .Release.Name | quote }}
+    spec:
+      containers:
+      - name: "configreload"
+        image: "{{ .Values.ConfigReload.Image.Name }}:{{ .Values.ConfigReload.Image.Tag }}"
+        imagePullPolicy: {{ .Values.Image.PullPolicy | default "Always" }}
+        args:
+        - --volume-dir=/etc/config
+        - --webhook-url=http://localhost:{{ .Values.AlertManager.Port.Container }}/-/reload
+        resources:
+{{ toYaml .Values.ConfigReload.Resources | indent 12 }}
+        volumeMounts:
+        - name: "config-volume"
+          mountPath: "/etc/config"
+          readOnly: true
+      - name: "alertmanager"
+        image: "{{ .Values.AlertManager.Image.Name }}:{{ .Values.AlertManager.Image.Tag }}"
+        imagePullPolicy: {{ .Values.Image.PullPolicy | default "Always" }}
+        args:
+        - --config.file=/etc/config/alertmanager.yml
+        - --storage.path=/data
+        - --web.listen-address=:{{ .Values.AlertManager.Port.Container }}
+        {{- range $key, $value := .Values.AlertManager.ExtraArgs }}
+        - --{{ $key }}={{ $value }}
+        {{- end }}
+        env:
+        - name: "NAMESPACE"
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: "POD_IP"
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        ports:
+        - containerPort: {{ .Values.AlertManager.Port.Container }}
+          name: "http"
+          protocol: "TCP"
+        readinessProbe:
+          httpGet:
+            path: "/#/status"
+            port: {{ .Values.AlertManager.Port.Container }}
+          initialDelaySeconds: 30
+          timeoutSeconds: 30
+        resources:
+{{ toYaml .Values.AlertManager.Resources | indent 12 }}
+        volumeMounts:
+        - name: "config-volume"
+          mountPath: "/etc/config"
+        - name: "storage-volume"
+          mountPath: "/data"
+      {{- if .Values.Image.PullSecret }}
+      imagePullSecrets:
+      - name: {{ .Values.Image.PullSecret }}
+      {{- end }}
+      {{- if .Values.AlertManager.NodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.AlertManager.NodeSelector | indent 8 }}  
+      {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.AlertManager.TerminationGracePeriodSeconds }}
+      volumes:
+      - name: "config-volume"
+        configMap:
+          name: {{ template "fullname" . }}
+      - name: "storage-volume"
+      {{- if .Values.AlertManager.Persistence.Enabled }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.AlertManager.Persistence.ExistingClaim | default (include "fullname" .) }}
+      {{- else }}
+        emptyDir: {}
+      {{- end }}

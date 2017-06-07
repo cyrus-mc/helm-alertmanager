@@ -1,0 +1,23 @@
+{{- if and .Values.AlertManager.Persistence.Enabled (not .Values.AlertManager.Persistence.ExistingClaim) -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ template "fullname" . }}
+  namespace: {{ .Values.Namespace | default "default" }}
+  labels:
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    component: {{ template "fullname" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  annotations:
+    volume.beta.kubernetes.io/storage-class: {{ .Values.AlertManager.Persistence.StorageClass | default "default" }}
+  {{- if .Values.AlertManager.Persistence.Annotations }}
+{{ toYaml .Values.AlertManager.Persistence.Annotations | indent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+  - {{ .Values.AlertManager.Persistence.AccessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.AlertManager.Persistence.Size | quote }}
+{{- end }}

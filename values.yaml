@@ -1,0 +1,75 @@
+# Default values for archiva
+# This is a YAML-formatted file.
+# Declare name/value pairs to be passed into your templates.
+# name: value
+
+#Namespace: monitoring
+
+Image:
+  PullPolicy: "Always"
+  #PullSecret: ".."
+ 
+ConfigReload:
+
+  # ConfigMap reload container image
+  Image:
+    Name: "jimmidyson/configmap-reload"
+    Tag: "v0.1"
+
+    # resources and request limits
+    # Ref: http://kubernetes.io/docs/user-guide/compute-resources
+    Resources: {}
+
+AlertManager:
+
+  # extra arguments to provide to alertmanager (key=value)
+  ExtraArgs: {}
+
+  # Alertmanager server container image
+  Image:
+    Name: "prom/alertmanager"
+    Tag: "v0.6.2"
+
+  # Persistence settings
+  Persistence:
+    Enabled: false
+
+    AccessMode: "ReadWriteOnce"
+    StorageClass: "standard"
+    Size: "2Gi"
+
+  Port:
+    Container: 9093
+
+  # currently will only work with value of 1 due to single PVC
+  Replicas: 1
+
+  # resources and request limits
+  # Ref: http://kubernetes.io/docs/user-guide/compute-resources
+  Resources: {}
+  # limits:
+  #   cpu: 10m
+  #   memory: 32Mi
+  # requests:
+  #   cpu: 10m
+  #   memory: 32Mi
+
+  # Alertmanager server pod termination grace period
+  TerminationGracePeriodSeconds: 300
+
+  Configuration: 
+
+    alertmanager.yml: |-
+      global:
+        # slack_api_url: ''
+
+      receivers:
+      - name: default-receiver
+        pagerduty_configs:
+        - service_key: "123456"
+
+      route:
+        group_wait: 10s
+        group_interval: 5m
+        receiver: default-receiver
+        repeat_interval: 3h

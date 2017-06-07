@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    component: {{ template "fullname" . }}
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+  name: {{ template "fullname" . }}
+  namespace: {{ .Values.Namespace | default "default" }}
+data:
+{{ toYaml .Values.AlertManager.Configuration | indent 2 }}
