@@ -59,18 +59,23 @@ AlertManager:
   #   memory: 32Mi
 
   # Alertmanager server pod termination grace period
+  # smtp_smarthost: smarsh-com.mail.protection.outlook.com 
+
   TerminationGracePeriodSeconds: 300
 
   Configuration: 
 
     alertmanager.yml: |-
       global:
-        # slack_api_url: ''
+        smtp_smarthost: 'smarsh-com.mail.protection.outlook.com'
 
       receivers:
       - name: default-receiver
         pagerduty_configs:
-        - service_key: "123456"
+        - service_key: '123456'
+      - name: 'Team-X-test'
+        email_configs:
+        - to: 'scott.raigner@smarsh.com'
 
       route:
         group_wait: 10s
