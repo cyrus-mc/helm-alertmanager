@@ -1,7 +1,7 @@
 # helm-alertmanager
 
 ## Prerequisites
-If running against a new or local environement then make sure you have initialized first.
+If running against a new or local environment then make sure you have initialized first.
 ```
 helm init
 ```
