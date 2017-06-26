@@ -63,19 +63,44 @@ AlertManager:
 
   TerminationGracePeriodSeconds: 300
 
-  Configuration: 
+Configuration:
 
-    alertmanager.yml: |-
+  alertmanager.yml: |-
       global:
-        smtp_smarthost: 'smarsh-com.mail.protection.outlook.com'
+	smtp_smarthost: 'smarsh-com.mail.protection.outlook.com'
+	smtp_from: 'X-Prom-Alerts@smarsh.com'
+	smtp_auth_username: 'X-Prom-Alerts'
+	smtp_auth_password: 'BlastedFalcon1'
+	# The auth token for Hipchat.
+	#hipchat_auth_token: '1234556789'
+	# Alternative host for Hipchat.
+	#hipchat_url: 'https://hipchat.foobar.org/'
+	#slack_api_url: '<slack_webhook_url>'
 
+	# do not set tls for now
       receivers:
       - name: default-receiver
-        email_configs:
-        - to: 'scott.raigner@smarsh.com'
+	email_configs:
+	- to: 'X-Prom-Alerts'
+	require_tls: false
 
       route:
-        group_wait: 10s
-        group_interval: 5m
-        receiver: default-receiver
-        repeat_interval: 3h
+	group_by: ['alertname', 'cluster', 'service', 'instance' ]
+	group_wait: 10s
+	group_interval: 5m
+	receiver: default-receiver
+	repeat_interval: 3h
+
+#  this should fix the instance messages in the description
+#  it must be done inside def for slack, pager duty
+#      route:
+#        group_by: ['alertname', 'cluster', 'service', 'instance']
+#      
+#      receivers:
+#      - name: 'slack-op-notifications'
+#        slack_configs: 
+#        - send_resolved: true
+#          api_url: xxx
+#          channel: '#xxx'
+#          text: '{{ .CommonAnnotations.summary }}, {{ .CommonAnnotations.description }}'
+
