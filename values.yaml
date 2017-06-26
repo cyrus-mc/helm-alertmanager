@@ -71,9 +71,6 @@ AlertManager:
 
       receivers:
       - name: default-receiver
-        pagerduty_configs:
-        - service_key: '123456'
-      - name: 'Team-X-test'
         email_configs:
         - to: 'scott.raigner@smarsh.com'
 
