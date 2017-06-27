@@ -67,10 +67,11 @@ Configuration:
 
   alertmanager.yml: |-
       global:
-	smtp_smarthost: 'smarsh-com.mail.protection.outlook.com'
+	smtp_smarthost: 'smtp.office365.com:587'
 	smtp_from: 'X-Prom-Alerts@smarsh.com'
-	smtp_auth_username: 'X-Prom-Alerts'
-	smtp_auth_password: 'BlastedFalcon1'
+	smtp_auth_username: 'X-Prom-Alerts@smarsh.com'
+	smtp_auth_password: 'BlastedFalcon1!'
+	smtp_require_tls: true
 	# The auth token for Hipchat.
 	#hipchat_auth_token: '1234556789'
 	# Alternative host for Hipchat.
@@ -81,8 +82,10 @@ Configuration:
       receivers:
       - name: default-receiver
 	email_configs:
-	- to: 'X-Prom-Alerts'
+	- to: 'X-Prom-Alerts@smarsh.com'
 	require_tls: false
+	pagerduty_configs:
+	-service_key: '12345'
 
       route:
 	group_by: ['alertname', 'cluster', 'service', 'instance' ]
@@ -103,4 +106,20 @@ Configuration:
 #          api_url: xxx
 #          channel: '#xxx'
 #          text: '{{ .CommonAnnotations.summary }}, {{ .CommonAnnotations.description }}'
-
+#receivers:
+#- name: general_receiver
+#  slack_configs:
+#  - api_url: https://hooks.slack.com/services/token
+#    channel: "#telemetry"
+#    title: "My summary"
+#    text: "My description"
+#{{ define "__slack_text" }}                                                                                                                                                
+#{{ range .Alerts }}{{ .Annotations.description}}{{ end }}                                                                                
+#{{ end }}
+#
+#{{ define "__slack_title" }}                                                                                                                                                
+#{{ range .Alerts }}{{ .Annotations.summary}}{{ end }}                                                                                
+#{{ end }}
+#
+#{{ define "slack.default.text" }}{{ template "__slack_text" . }}{{ end }}
+#{{ define "slack.default.title" }}{{ template "__slack_title" . }}{{ end }}
