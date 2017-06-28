@@ -8,7 +8,7 @@ helm init
 
 ## Install
 
-It is best to install this through the helm-prometheus helm chart.  Not directly using the method below.
+It is best to install this through the helm-prometheus helm chart.  The Alertmanager is one of the helm-prometheus chart dependencies. Not directly using the method below.
 
 ```
 git clone git@github.com:Smarsh/helm-alermanager.git
@@ -20,7 +20,7 @@ helm install . --set Service.Type=NodePort
 
 ### Email
 
-Notification are sent via MS office 365 to an email list named 'X-Prom-Alerts@smarsh.com'.  The repeat intervale is 15 minutes.
+Notification are sent via MS office 365 to an email list named 'X-Prom-Alerts@smarsh.com'.  The repeat interval is 15 minutes.
 
 ### Pager Duty
 
@@ -33,3 +33,6 @@ TBD
 ### HipChat
 
 This will probably not be supported.
+
+
+## Known Issues
