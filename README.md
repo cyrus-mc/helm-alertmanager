@@ -8,7 +8,7 @@ helm init
 
 ## Install
 
-It is best to install this through the helm-prometheus helm chart.  The Alertmanager is one of the helm-prometheus chart dependencies. Not directly using the method below.
+It is best to install the alertmanager through the helm-prometheus helm chart.  The Alertmanager is one of the helm-prometheus chart dependencies. Not directly using the method below.
 
 ```
 git clone git@github.com:Smarsh/helm-alermanager.git
@@ -24,15 +24,16 @@ Notification are sent via MS office 365 to an email list named 'X-Prom-Alerts@sm
 
 ### Pager Duty
 
-TBD
+  *TBD*
 
 ### Slack
 
-TBD
+  *TBD*
 
 ### HipChat
 
-This will probably not be supported.
-
+  *This will probably not be supported.*
 
 ## Known Issues
+
+
