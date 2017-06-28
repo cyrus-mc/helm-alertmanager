@@ -16,6 +16,14 @@ cd helm-alertmanager
 helm install . --set Service.Type=NodePort 
 ```
 
+## Alerts
+```
+InstanceDown
+InstanceHighCpu
+InstanceLowMemory
+InstanceLowDisk
+```
+
 ## Notifications
 
 ### Email
